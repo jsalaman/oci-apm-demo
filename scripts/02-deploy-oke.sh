@@ -21,9 +21,9 @@ echo "[5/6] Creating OCIR secret on namespace"
 kubectl create secret docker-registry ocir-secret \
     --namespace demo-apm \
     --docker-server=ocir.sa-santiago-1.oci.oraclecloud.com \
-    --docker-username="yzpk9kei2fk7/juan.salamanca@oracle.com" \
-    --docker-password="g3P15MCL1i[5p>Okg{Qf" \
-    --docker-email="juan.salamanca@oracle.com"
+    --docker-username="USER" \
+    --docker-password="TOKEN" \
+    --docker-email="EMAIL"
 
 echo "[6/6] Deploy app and expose via LoadBalancer"
 kubectl apply -f "${MANIFEST_DIR}/10-app.yaml"
