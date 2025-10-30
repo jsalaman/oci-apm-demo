@@ -10,4 +10,4 @@ spec:
       - name: OTEL_com_oracle_apm_agent_data_upload_endpoint
         value: "https://aaaadgqulp3ukaaaaaaaaad2qi.apm-agt.sa-santiago-1.oci.oraclecloud.com"   # e.g. https://aaaaaaaa.apm-agt.us-ashburn-1.oci.oraclecloud.com
       - name: OTEL_com_oracle_apm_agent_private_data_key
-        value: "Q7NGWEYH6QZZKWZJJGJIH4JDXR4UMSNF"
+        value: "DOM-PVT-KEY"
