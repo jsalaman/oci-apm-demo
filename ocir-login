@@ -1,7 +1,7 @@
 #!/bin/bash
-export TENANCY_NS=yzpk9kei2fk7
+export TENANCY_NS=TENANT-ID
 export REGION_SHORT=sa-santiago-1
 export REPO=ocir.${REGION_SHORT}.oci.oraclecloud.com/${TENANCY_NS}/apm-demo:v1
 
 # login con user/tenancy y auth token
-docker login ocir.${REGION_SHORT}.oci.oraclecloud.com -u "${TENANCY_NS}/juan.salamanca@oracle.com" -p "w_1b9C_WP{nnV49ITeX+"
+docker login ocir.${REGION_SHORT}.oci.oraclecloud.com -u "${TENANCY_NS}/USER" -p "TOKEN"
