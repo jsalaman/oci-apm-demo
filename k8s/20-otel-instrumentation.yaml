@@ -1,0 +1,13 @@
+apiVersion: opentelemetry.io/v1alpha1
+kind: Instrumentation
+metadata:
+  name: inst-apm-java
+  namespace: opentelemetry-operator-system
+spec:
+  java:
+    image: container-registry.oracle.com/oci_observability_management/oci-apm-java-agent:1.17.0.624
+    env:
+      - name: OTEL_com_oracle_apm_agent_data_upload_endpoint
+        value: "https://aaaadgqulp3ukaaaaaaaaad2qi.apm-agt.sa-santiago-1.oci.oraclecloud.com"   # e.g. https://aaaaaaaa.apm-agt.us-ashburn-1.oci.oraclecloud.com
+      - name: OTEL_com_oracle_apm_agent_private_data_key
+        value: "Q7NGWEYH6QZZKWZJJGJIH4JDXR4UMSNF"

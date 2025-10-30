@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apm-demo
+  namespace: demo-apm
+  labels:
+    app: apm-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: apm-demo
+  template:
+    metadata:
+      labels:
+        app: apm-demo
+    spec:
+      containers:
+        - name: app
+          image: ocir.sa-santiago-1.oci.oraclecloud.com/yzpk9kei2fk7/demo/apm-demo:v1  # replace with your OCIR image
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DOWNSTREAM_URL
+              value: "https://httpbin.org/delay/1"
+          volumeMounts:
+            - name: apm-attributes-k8s
+              mountPath: /etc/apm-attributes-k8s
+      volumes:
+        - name: apm-attributes-k8s
+          downwardAPI:
+            items:
+              - path: "labels"
+                fieldRef: { fieldPath: metadata.labels }
+              - path: "annotations"
+                fieldRef: { fieldPath: metadata.annotations }
+      imagePullSecrets:
+        - name: ocir-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apm-demo-svc
+  namespace: demo-apm
+spec:
+  type: LoadBalancer
+  selector:
+    app: apm-demo
+  ports:
+    - port: 80
+      targetPort: 8080
