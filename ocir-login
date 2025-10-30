@@ -1,4 +1,5 @@
 #!/bin/bash
+#Env variables script
 export TENANCY_NS=TENANT-ID
 export REGION_SHORT=sa-santiago-1
 export REPO=ocir.${REGION_SHORT}.oci.oraclecloud.com/${TENANCY_NS}/apm-demo:v1
