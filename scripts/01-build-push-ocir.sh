@@ -1,25 +1,24 @@
-#!/usr/bin/env bash
+#!/bin/bash
+# (c) 2024 Demo. MIT License
 set -euo pipefail
 
-OCI_USER=USER
-TENANCY_NS=yzpk9kei2fk7    # oci iam tenant
-REGION_SHORT=sa-santiago-1              # fra/phx/syd...
-REPO="ocir.${REGION_SHORT}.oci.oraclecloud.com/${TENANCY_NS}/demo/apm-demo"
-TAG="v1"
-IMAGE="${REPO}:${TAG}"
-USER="${TENANCY_NS}/${OCI_USER}"
-AUTH_TOKEN="<token>"
+# Load configuration
+# =======================
+source .env
 
-cd "$(dirname "$0")/.."
-APP_DIR="app"
+# Login to OCIR
+# =======================
+printf "INFO: Logging in to OCIR...\n"
+echo "$AUTH_TOKEN" | docker login "$REGION.ocir.io" --username "$TF_VAR_tenancy_namespace/oci.auth.token" --password-stdin
 
-echo "[1/4] Docker login to OCIR..."
-echo "${AUTH_TOKEN}" | docker login "${REGION_SHORT}.ocir.io" -u "${USER}" --password-stdin
+# Build image
+# =======================
+printf "INFO: Building image...\n"
+docker build -t "$OCIR_REPO_URL" app
 
-echo "[2/4] Build image..."
-docker build -t "${IMAGE}" "${APP_DIR}"
+# Push image to OCIR
+# =======================
+printf "INFO: Pushing image to OCIR...\n"
+docker push "$OCIR_REPO_URL"
 
-echo "[3/4] Push image..."
-docker push "${IMAGE}"
-
-echo "[4/4] Done. Use image: ${IMAGE}"
+printf "INFO: Done.\n"

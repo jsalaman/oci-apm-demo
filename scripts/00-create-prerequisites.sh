@@ -1,54 +1,59 @@
-#!/usr/bin/env bash
+#!/bin/bash
+# (c) 2024 Demo. MIT License
 set -euo pipefail
 
-# Placeholder values - replace with your actual values
-COMPARTMENT_ID="<your_compartment_id>"
-REGION="<your_region>"
-VCN_ID="<your_vcn_id>"
-SUBNET_ID="<your_subnet_id>"
-IMAGE_ID="<your_image_id>"
-OKE_CLUSTER_NAME="apm-demo-cluster"
-OCIR_REPO_NAME="apm-demo-repo"
-APM_DOMAIN_NAME="apm-demo-domain"
+# Load configuration
+# =======================
+source .env
 
-echo "Creating OKE Cluster..."
+# OKE Cluster
+# =======================
+printf "INFO: Creating OKE cluster...\n"
 oci ce cluster create \
-  --compartment-id $COMPARTMENT_ID \
-  --name $OKE_CLUSTER_NAME \
-  --kubernetes-version "v1.28.2" \
-  --vcn-id $VCN_ID \
-  --region $REGION \
+  --compartment-id "$COMPARTMENT_ID" \
+  --name "$OKE_CLUSTER_NAME" \
+  --kubernetes-version "$KUBERNETES_VERSION" \
+  --vcn-id "$VCN_ID" \
+  --endpoint-subnet-id "$SUBNET_ID" \
+  --service-lb-subnet-ids "[\"$SUBNET_ID\"]" \
   --node-pool-details '{
-    "name": "nodepool1",
-    "nodeShape": "VM.Standard.E4.Flex",
-    "nodeShapeConfig": {
-      "ocpus": 1,
-      "memoryInGBs": 16
-    },
-    "placementConfigs": [
-      {
-        "availabilityDomain": "Uocm:US-ASHBURN-AD-1",
-        "subnetId": "'$SUBNET_ID'"
+      "name": "np1",
+      "compartmentId": "'"$COMPARTMENT_ID"'",
+      "kubernetesVersion": "'"$KUBERNETES_VERSION"'",
+      "nodeShape": "'"$OKE_NODE_SHAPE"'",
+      "nodeShapeConfig": {
+        "ocpus": 1,
+        "memoryInGBs": 16
+      },
+      "placementConfigs": [
+        {
+          "availabilityDomain": "'"$OKE_AD"'",
+          "subnetId": "'"$SUBNET_ID"'"
+        }
+      ],
+      "size": 1,
+      "nodeSourceDetails": {
+        "sourceType": "IMAGE",
+        "imageId": "'"$IMAGE_ID"'"
       }
-    ],
-    "size": 1,
-    "nodeSourceDetails": {
-      "sourceType": "IMAGE",
-      "imageId": "'$IMAGE_ID'"
-    }
-  }' \
-  --wait-for-state SUCCEEDED
+    }' \
+  --wait-for-state "ACTIVE"
 
-echo "Creating OCIR Repository..."
-oci artifacts container repository create \
-  --compartment-id $COMPARTMENT_ID \
-  --display-name $OCIR_REPO_NAME \
+# OCIR Repo
+# =======================
+printf "INFO: Creating OCIR repo...\n"
+oci artifacts container-repository create \
+  --compartment-id "$COMPARTMENT_ID" \
+  --display-name "$OCIR_REPO_NAME" \
   --is-public true
 
-echo "Creating APM Domain..."
+# APM Domain
+# =======================
+printf "INFO: Creating APM Domain...\n"
 oci apm-control-plane apm-domain create \
-  --compartment-id $COMPARTMENT_ID \
-  --display-name $APM_DOMAIN_NAME \
-  --is-free-tier "true"
+  --compartment-id "$COMPARTMENT_ID" \
+  --display-name "$APM_DOMAIN_NAME" \
+  --is-free-tier true \
+  --wait-for-state "ACTIVE"
 
-echo "Prerequisites created successfully."
+printf "INFO: Done.\n"

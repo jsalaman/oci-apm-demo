@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: ocir.sa-santiago-1.oci.oraclecloud.com/yzpk9kei2fk7/demo/apm-demo:v1  # replace with your OCIR image
+          image: ${OCIR_REPO_URL}
           ports:
             - containerPort: 8080
           env:
