@@ -1,30 +1,31 @@
-#!/usr/bin/env bash
+#!/bin/bash
+# (c) 2024 Demo. MIT License
 set -euo pipefail
 
-# Placeholder values - replace with your actual values
-COMPARTMENT_ID="<your_compartment_id>"
-OKE_CLUSTER_NAME="apm-demo-cluster"
-OCIR_REPO_NAME="apm-demo-repo"
-APM_DOMAIN_NAME="apm-demo-domain"
+# Load configuration
+# =======================
+source .env
 
-echo "Deleting OKE Cluster..."
-CLUSTER_ID=$(oci ce cluster list --compartment-id $COMPARTMENT_ID --name $OKE_CLUSTER_NAME --query "data[0].id" --raw-output)
-if [ -n "$CLUSTER_ID" ]; then
-  oci ce cluster delete --cluster-id $CLUSTER_ID --force --wait-for-state SUCCEEDED
-fi
+# OKE Cluster
+# =======================
+printf "INFO: Deleting OKE cluster...\n"
+oci ce cluster delete --cluster-id "$OKE_CLUSTER_OCID" --force --wait-for-state "DELETED"
 
-echo "Deleting OCIR Repository..."
-REPO_ID=$(oci artifacts container repository list --compartment-id $COMPARTMENT_ID --display-name $OCIR_REPO_NAME --query "data.items[0].id" --raw-output)
-if [ -n "$REPO_ID" ]; then
-    oci artifacts container repository delete --repository-id $REPO_ID --force
-fi
+# OCIR Repo
+# =======================
+printf "INFO: Deleting OCIR repo...\n"
+OCIR_REPO_ID=$(oci artifacts container-repository list --compartment-id "$COMPARTMENT_ID" --display-name "$OCIR_REPO_NAME" --query "data.items[0].id" --raw-output)
+oci artifacts container-repository delete --repository-id "$OCIR_REPO_ID" --force
 
-echo "Deleting APM Domain..."
-APM_DOMAIN_ID=$(oci apm-control-plane apm-domain list --compartment-id $COMPARTMENT_ID --display-name $APM_DOMAIN_NAME --query "data.items[0].id" --raw-output)
-if [ -n "$APM_DOMAIN_ID" ]; then
-  oci apm-control-plane apm-domain delete --apm-domain-id $APM_DOMAIN_ID --force --wait-for-state SUCCEEDED
-fi
+# APM Domain
+# =======================
+printf "INFO: Deleting APM Domain...\n"
+APM_DOMAIN_ID=$(oci apm-control-plane apm-domain list --compartment-id "$COMPARTMENT_ID" --display-name "$APM_DOMAIN_NAME" --query "items[0].id" --raw-output)
+oci apm-control-plane apm-domain delete --apm-domain-id "$APM_DOMAIN_ID" --force --wait-for-state "DELETED"
 
-kubectl delete -f k8s/10-app.yaml || true
-kubectl delete -f k8s/20-otel-instrumentation.yaml || true
-kubectl delete -f k8s/00-namespace.yaml || true
+# K8s resources
+# =======================
+printf "INFO: Deleting K8s namespace...\n"
+kubectl delete namespace "$K8S_NAMESPACE"
+
+printf "INFO: Done.\n"
