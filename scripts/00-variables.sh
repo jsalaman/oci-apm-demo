@@ -12,6 +12,7 @@ export VCN_ID="ocid1.vcn.oc1..aaaaaaaa..."
 export SUBNET_ID="ocid1.subnet.oc1..aaaaaaaa..."
 export IMAGE_ID="ocid1.image.oc1..aaaaaaaa..."
 export OKE_CLUSTER_NAME="oke-apm-demo"
+export KUBERNETES_VERSION="v1.28.2"
 export OKE_NODE_SHAPE="VM.Standard.E4.Flex"
 export OKE_AD="SA-SANTIAGO-1-AD-1" # Update to match your REGION
 export K8S_NAMESPACE="demo-apm"

@@ -12,14 +12,14 @@ printf "INFO: Creating OKE cluster...\n"
 oci ce cluster create \
   --compartment-id "$COMPARTMENT_ID" \
   --name "$OKE_CLUSTER_NAME" \
-  --kubernetes-version "v1.28.2" \
+  --kubernetes-version "$KUBERNETES_VERSION" \
   --vcn-id "$VCN_ID" \
   --endpoint-subnet-id "$SUBNET_ID" \
   --service-lb-subnet-ids "[\"$SUBNET_ID\"]" \
   --node-pool-details '{
       "name": "np1",
       "compartmentId": "'"$COMPARTMENT_ID"'",
-      "kubernetesVersion": "v1.28.2",
+      "kubernetesVersion": "'"$KUBERNETES_VERSION"'",
       "nodeShape": "'"$OKE_NODE_SHAPE"'",
       "nodeShapeConfig": {
         "ocpus": 1,
