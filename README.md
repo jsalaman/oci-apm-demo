@@ -39,6 +39,8 @@ End-to-end demo: Spring Boot app in **OKE**, instrumented with **OCI APM Java Ag
 ```bash
 ./scripts/03-load-test-checkout.sh
 ```
+(The script will automatically wait for the service's external IP and then send 20 `POST` requests with a JSON body to the `/api/checkout` endpoint to simulate user activity.)
+
 Open **OCI Console → Application Performance Monitoring → Trace Explorer**.
 
 
